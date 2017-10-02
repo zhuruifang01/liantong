@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <title></title>
+	<style type="text/css">
+  body, html,#map_demo, #tab, #mapfrm {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+  #menu{height:100%;overflow-y:auto}
+  td{font-size:14px}
+  h4{margin:0;}
+  .anchorBL{display:none;}
+  </style>
+  <script type="text/javascript" src="js/baidumap_offline_v2_load.js"></script>
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/layer/layer.js"></script>
+  <script src="../js/echarts.min.js"></script>
+  <!--<link rel="stylesheet" type="text/css" href="../../baidumapv2/css/baidu_map_v2.css"/>-->
+</head>
+<body>
+<div id="map_demo" style="width:100%;height:100%;display:none;">1</div>
+<div id="main" style="width:100%;height:100%;">1</div>
+</body>
+</html>
+<script type="text/javascript">
+// 百度地图API功能:【打点】
+        var map = new BMap.Map("map_demo");
+        function map1(lng,lat,name){
+            var point = new BMap.Point(lng,lat);
+            map.centerAndZoom(point,13);
+            var marker = new BMap.Marker(point);  // 创建标注
+            map.addOverlay(marker);              // 将标注添加到地图中
+            marker.addEventListener("click",getAttr);
+            function getAttr(){
+                var p = marker.getPosition();       //获取marker的位置
+                layer.msg("问题场景："+name+"(" + p.lng + "," + p.lat+'）');
+            }
+        }
+        map1(121.479159,31.239115,"徐家汇");   //可 循环调用来 打点
+//echarts 上海地图:【区】
+    $.get('../js/shanghai.json', function (shanghaiJson) {
+        echarts.registerMap('shanghai', shanghaiJson);
+        var chart = echarts.init(document.getElementById('main'));
+        var option = {
+            tooltip : {
+                trigger: 'item'
+            },
+            dataRange: {
+                x: 'left',
+                y: 'bottom',
+                splitList: [
+                    {start: 1000,label:'>1000'},
+                    {start: 500, end: 1000},
+                    {start: 300, end: 500},
+                    {start: 200, end: 300},
+                    {start: 10, end: 200},
+                    {end: 10,color:'blue'}
+                ],
+                textStyle: {
+                    color: '#fff'   //字体颜色
+                },
+                color: ['#E0022B', '#E09107', '#A3E00B']
+            },
+            roamController: {
+                show: true,
+                x: 'left',
+                mapTypeControl: {
+                    'shanghai': true
+                }
+            },
+            series : [
+                {
+                    name: '问题场景数:',
+                    type: 'map',
+                    mapType: 'shanghai',
+                    roam: false,
+                    itemStyle:{
+                        normal:{
+                            label:{
+                                show:true,
+                                textStyle: {
+                                    color: "rgb(249, 249, 249)"
+                                }
+                            }
+                        },
+                        emphasis:{label:{show:true}}
+                    },
+                    data:[
+                        {name: '崇明县',value: Math.round(Math.random()*1000)},
+                        {name: '宝山区',value: Math.round(Math.random()*1000)},
+                        {name: '嘉定区',value: Math.round(Math.random()*1000)},
+                        {name: '青浦区',value: Math.round(Math.random()*1000)},
+                        {name: '杨浦区',value: Math.round(Math.random()*1000)},
+                        {name: '虹口区',value: Math.round(Math.random()*1000)},
+                        {name: '闸北区',value: Math.round(Math.random()*1000)},
+                        {name: '普陀区',value: Math.round(Math.random()*1000)},
+                        {name: '静安区',value: Math.round(Math.random()*1000)},
+                        {name: '黄浦区',value: Math.round(Math.random()*1000)},
+                        {name: '卢湾区',value: Math.round(Math.random()*1000)},
+                        {name: '长宁区',value: Math.round(Math.random()*1000)},
+                        {name: '徐汇区',value: Math.round(Math.random()*1000)},
+                        {name: '浦东新区',value: Math.round(Math.random()*1000)},
+                        {name: '松江区',value: Math.round(Math.random()*1000)},
+                        {name: '闵行区',value: Math.round(Math.random()*1000)},
+                        {name: '金山区',value: Math.round(Math.random()*1000)},
+                        {name: '奉贤区',value: Math.round(Math.random()*1000)},
+                        {name: '南汇区',value: Math.round(Math.random()*1000)}
+                    ]
+                }
+            ]
+        };
+        chart.setOption(option);
+        //为地图添加点击事件：
+        chart.on('click', function (params) {
+            var index= params.dataIndex;   //下标
+            var name=params.name;  //名称
+            alert(name);
+            $("#main").css({"display":"none"});
+            $("#map_demo").css({"display":"block"});
+            //在此处写 ajax()来调用map1();
+        });
+    });
+</script>
